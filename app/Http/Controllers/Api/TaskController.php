@@ -3,48 +3,51 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
+
 
 class TaskController extends Controller
 {
-
     public function index(Request $request)
     {
-        return response()->json($request->user()->tasks);
-    }
+        $tasks = $request->user()->tasks()->latest()->get();
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            "title" => "required|string|max:255",
-            "description" => "nullable|string",
-            "status" => "required|string"
+        return response()->json([
+            'message' => 'Tasks retrieved successfully',
+            'data' => $tasks,
         ]);
-
-        $task = $request->user()->tasks()->create($validated);
-
-        return response()->json($task, 201);
     }
 
-    public function update(Request $request, $id)
+    public function store(StoreTaskRequest $request)
+    {
+        $task = $request->user()->tasks()->create($request->validated());
+
+        return response()->json([
+            'message' => 'Task created successfully',
+            'data' => $task,
+        ], 201);
+    }
+
+    public function update(UpdateTaskRequest $request, $id)
     {
         $task = $request->user()->tasks()->findOrFail($id);
+        $task->update($request->validated());
 
-        $task->update($request->all());
-
-        return response()->json($task);
+        return response()->json([
+            'message' => 'Task updated successfully',
+            'data' => $task,
+        ]);
     }
 
     public function destroy(Request $request, $id)
     {
         $task = $request->user()->tasks()->findOrFail($id);
-
         $task->delete();
 
         return response()->json([
-            "message" => "Task deleted"
+            'message' => 'Task deleted successfully',
         ]);
     }
-
 }

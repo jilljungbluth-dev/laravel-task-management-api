@@ -9,50 +9,54 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-
     public function register(Request $request)
     {
         $validated = $request->validate([
-            "name" => "required|string|max:255",
-            "email" => "required|email|unique:users,email",
-            "password" => "required|min:6"
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
         ]);
 
         $user = User::create([
-            "name" => $validated["name"],
-            "email" => $validated["email"],
-            "password" => Hash::make($validated["password"])
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
         ]);
 
-        $token = $user->createToken("api_token")->plainTextToken;
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            "user" => $user,
-            "token" => $token
+            'message' => 'User registered successfully',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ]
         ], 201);
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            "email" => "required|email",
-            "password" => "required"
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        $user = User::where("email", $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
-                "message" => "Invalid credentials"
+                'message' => 'Invalid credentials',
             ], 401);
         }
 
-        $token = $user->createToken("api_token")->plainTextToken;
+        $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            "user" => $user,
-            "token" => $token
+            'message' => 'Login successful',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ],
         ]);
     }
 
@@ -61,7 +65,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            "message" => "Logged out"
+            'message' => 'Logged out successfully',
         ]);
     }
 }
