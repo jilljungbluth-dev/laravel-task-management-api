@@ -17,18 +17,19 @@ A RESTful API built with Laravel for managing tasks with authentication using La
 
 ### Auth
 
-POST /api/register  
-POST /api/login  
+- `POST /api/register`
+- `POST /api/login`
 
 ### Tasks
 
-GET /api/tasks  
-POST /api/tasks  
-PUT /api/tasks/{id}  
-DELETE /api/tasks/{id}  
+- `GET /api/tasks`
+- `POST /api/tasks`
+- `PUT /api/tasks/{id}`
+- `DELETE /api/tasks/{id}`
 
 ## Task Structure
 
+```json
 {
   "id": 1,
   "title": "Finish API",
@@ -38,6 +39,7 @@ DELETE /api/tasks/{id}
   "created_at": "2026-03-16T16:46:14.000000Z",
   "updated_at": "2026-03-16T16:46:14.000000Z"
 }
+```
 
 ## Tech Stack
 
@@ -47,22 +49,44 @@ DELETE /api/tasks/{id}
 
 ## Installation
 
+### Clone the repository
+
+```bash
 git clone https://github.com/jilljungbluth-dev/laravel-task-management-api.git
 cd laravel-task-management-api
+```
 
+### Install dependencies
+
+```bash
 composer install
+```
 
+### Copy the environment file
+
+```bash
 cp .env.example .env
+```
 
+### Generate the application key
+
+```bash
 php artisan key:generate
+```
 
-Configure your database in `.env`, then run:
+### Configure your database and run migrations
 
+Update your `.env` file with your database credentials, then run:
+
+```bash
 php artisan migrate
+```
 
-Start the server:
+### Start the development server
 
+```bash
 php artisan serve
+```
 
 ## Authentication
 
@@ -70,13 +94,17 @@ This API uses Laravel Sanctum for token-based authentication.
 
 After login, include the token in the request header:
 
+```http
 Authorization: Bearer YOUR_TOKEN
+```
 
 ## Example Response
 
+```json
 {
   "id": 1,
   "title": "Finish API",
   "description": "Build Laravel REST API",
   "status": "pending"
 }
+```
